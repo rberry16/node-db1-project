@@ -11,8 +11,9 @@ router.get('/:id', md.checkAccountId, (req, res, next) => {
   res.json(req.account);
 })
 
-router.post('/', (req, res, next) => {
-  // DO YOUR MAGIC
+router.post('/', md.checkAccountPayload, async (req, res, next) => {
+  const account = await Acc.create(req.body);
+  res.status(201).json(account);
 })
 
 router.put('/:id', (req, res, next) => {
@@ -24,7 +25,11 @@ router.delete('/:id', (req, res, next) => {
 })
 
 router.use((err, req, res, next) => { // eslint-disable-line
-  // DO YOUR MAGIC
-})
+  res.json({
+    message: 'there was an error',
+    err: err.message,
+    stack: err.stack
+  });
+});
 
 module.exports = router;
