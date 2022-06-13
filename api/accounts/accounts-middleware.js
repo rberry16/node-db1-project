@@ -2,20 +2,17 @@ const Acc = require('./accounts-model');
 const db = require('../../data/db-config');
 
 exports.checkAccountPayload = (req, res, next) => {
-  const name = req.body.name.trim();
-  const budget = Number(req.body.budget);
-  if (name === undefined || budget === undefined || !name || budget === null) {
+  if (req.body.name === undefined || req.body.budget === undefined) {
     res.status(400).json({message: 'name and budget are required'});
-  } else if (name.length < 3 || name.length > 100) {
+  } else if (req.body.name.trim().length < 3 || req.body.name.trim().length > 100) {
     res.status(400).json({message: 'name of account must be between 3 and 100'});
-  } else if (typeof budget !== 'number' || isNaN(budget)) {
+  } else if (typeof req.body.budget !== 'number' || isNaN(req.body.budget)) {
     res.status(400).json({message: 'budget of account must be a number'});
-  } else if (budget < 0 || budget > 1000000) {
+  } else if (req.body.budget < 0 || req.body.budget > 1000000) {
     res.status(400).json({message: 'budget of account is too large or too small'});
   } else {
     next();
   }
-  console.log(budget);
 }
 
 exports.checkAccountNameUnique = async (req, res, next) => {
