@@ -19,7 +19,7 @@ router.get('/:id', md.checkAccountId, (req, res, next) => {
   }
 })
 
-router.post('/', md.checkAccountPayload, async (req, res, next) => {
+router.post('/', md.checkAccountPayload, md.checkAccountNameUnique, async (req, res, next) => {
   try {
     const newAcc = await Acc.create(req.body);
     const account = await Acc.getById(newAcc[0]);
@@ -29,12 +29,24 @@ router.post('/', md.checkAccountPayload, async (req, res, next) => {
   }
 })
 
-router.put('/:id', (req, res, next) => {
-  // DO YOUR MAGIC
+router.put('/:id', md.checkAccountId, md.checkAccountPayload, md.checkAccountNameUnique, async (req, res, next) => {
+  try {
+    await Acc.updateById(req.params.id, req.body);
+    const updated = await Acc.getById(req.params.id);
+    res.json(updated);
+  } catch (err) {
+    next(err);
+  }
 });
 
-router.delete('/:id', (req, res, next) => {
-  // DO YOUR MAGIC
+router.delete('/:id', md.checkAccountId, async (req, res, next) => {
+  try {
+    const account = await Acc.getById(req.params.id);
+  await Acc.deleteById(req.params.id);
+  res.json(account);
+  } catch (err) {
+    next(err);
+  }
 })
 
 router.use((err, req, res, next) => { // eslint-disable-line
