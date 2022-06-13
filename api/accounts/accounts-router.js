@@ -3,17 +3,30 @@ const Acc = require('./accounts-model');
 const md = require('./accounts-middleware');
 
 router.get('/', async (req, res, next) => {
-  const accounts = await Acc.getAll();
-  res.json(accounts);
+  try {
+    const accounts = await Acc.getAll();
+    res.json(accounts);
+  } catch (err) {
+    next(err);
+  }
 })
 
 router.get('/:id', md.checkAccountId, (req, res, next) => {
-  res.json(req.account);
+  try {
+    res.json(req.account);
+  } catch (err) {
+    next(err);
+  }
 })
 
 router.post('/', md.checkAccountPayload, async (req, res, next) => {
-  const account = await Acc.create(req.body);
-  res.status(201).json(account);
+  try {
+    const newAcc = await Acc.create(req.body);
+    const account = await Acc.getById(newAcc[0]);
+    res.status(201).json(account);
+  } catch (err) {
+    next(err);
+  }
 })
 
 router.put('/:id', (req, res, next) => {
